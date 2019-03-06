@@ -1,0 +1,16 @@
+---
+title: "Base de donnée de services des citoyens"
+subtitle: "Projet de base de données"
+date: "`r format(Sys.time(), '%d/%m/%Y')`"
+bibliography: ["ref.bib"]
+biblio-style: apalike
+link-citations: yes
+lang: fr-FR
+---
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.pos = 'H')
+knitr::opts_knit$set(root.dir = './')
+```
+```{r child='include/abbrev.tex'}
+```
+\pagebreak

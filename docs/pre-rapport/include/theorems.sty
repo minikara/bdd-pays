@@ -1,0 +1,128 @@
+\ProvidesPackage{theorems}
+
+\DeclareOption{english}{%
+\def\thmName{Theorem}
+  \def\defnName{Definition}
+  \def\lemName{Lemma}
+  \def\corName{Corollary}
+  \def\propName{Proposition}
+  \def\conjName{Conjecture}
+  \def\critrName{Criterion}
+  \def\condName{Condition}
+  \def\probName{Problem}
+  \def\exmName{Example}
+  \def\excName{Exercise}
+  \def\algName{Algorithm}
+  \def\quesName{Question}
+  \def\axiomName{Axiom}
+  \def\proptName{Property}
+  \def\hypName{Hypothesis}
+  \def\rmkName{Remark}
+  \def\summaryName{Summary}
+  \def\conclName{Conclusion}
+}
+
+\DeclareOption{french}{%
+\def\thmName{Th\'eor\`eme}
+  \def\defnName{D\'efinition}
+  \def\lemName{Lemme}
+  \def\corName{Corollaire}
+  \def\propName{Proposition}
+  \def\conjName{Conjecture}
+  \def\critrName{Crit\`ere}
+  \def\condName{Condition}
+  \def\probName{Probl\`eme}
+  \def\exmName{Exemple}
+  \def\excName{Exercice}
+  \def\algName{Algorithme}
+  \def\quesName{Question}
+  \def\axiomName{Axiome}
+  \def\proptName{Propri\'et\'e}
+  \def\hypName{Hypoth\`ese}
+  \def\rmkName{Remarque}
+  \def\summaryName{Sommaire}
+  \def\conclName{Conclusion}
+}
+
+\ExecuteOptions{english}
+\ProcessOptions \relax
+
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins}
+\tcbuselibrary{theorems}
+
+\RequirePackage{geometry}
+\geometry{tmargin=2cm,bmargin=2cm,lmargin=2cm,rmargin=2cm}
+
+\tcbset{
+  linestyle/.style={enhanced,
+% title and description
+coltitle=black, fonttitle=\bfseries,
+        attach boxed title to top left={xshift=-4mm},
+                boxed title style={frame hidden, boxrule=0pt, colback=white},
+                description color=black, description font=\mdseries\itshape,
+                        separator sign dash,
+% body
+frame hidden, arc=0mm, top=0mm, bottom=0mm, left=2mm,
+        grow to left by=-1mm,
+                borderline west={0.75mm}{0mm}{black!70!white},
+                        colback=white
+},%
+dashedstyle/.style={enhanced,
+% title and description
+coltitle=black, fonttitle=\bfseries,
+        attach boxed title to top left={xshift=-4mm},
+        boxed title style={frame hidden, boxrule=0pt, colback=white},
+        description color=black, description font=\mdseries\itshape,
+        separator sign dash,
+% body
+frame hidden, arc=0mm, top=0mm, bottom=0mm, left=2mm,
+        grow to left by=-1mm,
+        borderline west={0.75mm}{0mm}{black!57!white, dashed},
+        colback=white
+},%
+boxstyle/.style={enhanced,
+% title and description
+coltitle=black, fonttitle=\bfseries,
+        attach boxed title to top left={xshift=5mm,yshift=-2.5mm},
+        boxed title style={frame hidden, boxrule=0pt, colback=white},
+        description color=black, description font=\mdseries\itshape,
+        separator sign dash,
+% body
+arc=0mm, sharp corners,
+        colback=white
+},%
+}
+
+%syntax: \newtheoremenv{<envname>}{<envtitle>}{<style>}
+\newcommand{\newtheoremenv}[3]{
+\newtcbtheorem{tcb#1}{#2}{#3}{}
+\newenvironment{#1}[1][]{
+\ifx&##1&%
+\begin{tcb#1}{}{}
+\else
+  \begin{tcb#1}{##1}{}
+\fi
+}{
+\end{tcb#1}
+}
+}
+
+\newtheoremenv{thm}{\thmName}{linestyle}
+\newtheoremenv{defn}{\defnName}{linestyle}
+\newtheoremenv{lemma}{\lemName}{linestyle}
+\newtheoremenv{corol}{\corName}{linestyle}
+\newtheoremenv{prop}{\propName}{linestyle}
+\newtheoremenv{conjecture}{\conjName}{linestyle}
+\newtheoremenv{criteria}{\critrName}{linestyle}
+\newtheoremenv{cond}{\condName}{linestyle}
+\newtheoremenv{prob}{\probName}{linestyle}
+\newtheoremenv{exmp}{\exmName}{dashedstyle}
+\newtheoremenv{algo}{\algName}{linestyle}
+\newtheoremenv{quest}{\quesName}{linestyle}
+\newtheoremenv{axiom}{\axiomName}{linestyle}
+\newtheoremenv{proprt}{\proptName}{linestyle}
+\newtheoremenv{hyp}{\hypName}{linestyle}
+\newtheoremenv{rmk}{\rmkName}{dashedstyle}
+\newtheoremenv{summary}{\summaryName}{linestyle}
+\newtheoremenv{conclusion}{\conclName}{linestyle}

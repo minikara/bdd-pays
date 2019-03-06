@@ -1,0 +1,27 @@
+\ProvidesPackage{mathCourse}
+
+\RequirePackage{include/theorems}
+
+\RequirePackage{babel}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+
+\RequirePackage{geometry}
+\geometry{tmargin=2cm,bmargin=2cm,lmargin=2cm,rmargin=2cm}
+
+\usepackage{amsmath}
+\usepackage{amsthm,amssymb,amsfonts,amscd}
+\usepackage{mathtools}
+\usepackage{centernot}
+
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+
+%\usepackage[backref=false,colorlinks=false]{hyperref}
+
+\newcommand{\bigsidenote}[1]{\tag*{$\pp{\text{\parbox{0.5\textwidth}{#1}}}$}}
+
+\usepackage{array}   % for \newcolumntype macro
+\newcolumntype{C}{>{$}c<{$}}

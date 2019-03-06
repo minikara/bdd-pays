@@ -1,0 +1,17 @@
+bookdown::pdf_book:
+  toc: true
+  number_sections: true
+  fig_caption: true
+  includes:
+    in_header: include/preambule.tex
+    before_body: parts/cover.tex
+bookdown::html_document2:
+  toc: true
+  toc_float: true
+  theme: simplex
+  fig_caption: true
+  css: include/styles.css
+  includes:
+    in_header: include/header.html
+bookdown::gitbook:
+  fig_caption: true
