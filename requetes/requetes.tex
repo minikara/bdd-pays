@@ -1,0 +1,130 @@
+%% LyX 2.3.2-1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[cp1251]{inputenc}
+\usepackage{amssymb}
+\usepackage[belarusian]{babel}
+\begin{document}
+
+\section*{Modifications}
+\begin{itemize}
+	\item Pour la d\'{e}normalisation : Toutes les relations $1..n-1..1$ peuvent
+		\^{e}tre simplifier en ajoutant dans la table $1..1$ une clef pour
+		acc\'{e}der aux \'{e}l\'{e}ments de la table $1..n$. (Bonnes pratiques).
+		On peut donc ajouter \`{a} <<Impot>>, \`{a} <<Papier>>, <<ElementsJuridique>>,
+		et <<AidesSociales>> une clefs \'{e}trang\`{e}re vers <<IdResident>>
+		repr\'{e}sentant le r\'{e}sident auquel l'Impot, le Papier, l'aide
+		sociales ou l'\'{e}l\'{e}ment juridique est associ\'{e}.
+
+	\item Pour les tables <<Papier>>, <<Impot>> et <<AidesScociales>>:
+		ajout d'un \'{e}l\'{e}ment <<etat>> qui prendra les valeurs <<EnCoursDeValidation>>,
+		<<Valid\'{e}>>, <<Refus\'{e}>> ou <<Expir\'{e}>>. Cela va permettre
+		pour faire une demande de Papier, Aides sociales ou une de d\'{e}claration
+		d'impot, tr\`{e}s simplement. Le R\'{e}sident rempli un formulaire
+		et le soumet sur la plateforme. La requ\^{e}te derriere sera simplement
+		un insert dans la table voulu avec tous les \'{e}l\'{e}ments indiqu\'{e}s
+		par le r\'{e}sident, seulement, l' <<etat>> du Papier, de l'Aide
+		Sociale ou de l'impot cr\'{e}e sera <<EnCoursDeValidation>>, pour
+		passer \`{a} <<Valid\'{e}>> ou <<Refus\'{e}>> il faudrat qu'un
+		administrateur la valide. Cela permet de supprimer facilement les
+		relations ternaires non souhait\'{e}.Cela permet aussi de garder pendant
+		un temps souhait\'{e} les diff\'{e}rents \'{e}l\'{e}ments du dossier
+		d'un R\'{e}sident m\^{e}me si ceu ci sont expir\'{e} ou sont des demandes
+		refus\'{e} (on peut imaginer qu'apr\`{e}s un temps ils sont supprim\'{e}s
+		de la base de donn\'{e}es. Ainsi par exemple si un R\'{e}sident veut
+		faie une demande de Care d'identit\'{e}, il n'a qu'a remplir le formulaire
+		en indiquant <<carte d'ident\'{e}>> en nom ainsi que les autres
+		information utile, il en d\'{e}coulera un insert dans la table <<Papier>>
+		avec la cr\'{e}ation du papier demand\'{e} associ\'{e} au formulaire,
+		seulement l'\'{e}tat du papier sera <<EnCoursDeValidation>> jusqu'\`{a}
+		ce qu'un administrateur le passe en <<Valid\'{e}>> ou <<Refus\'{e}>>.
+
+	\item Pour la table <<ElementsJudicaires>> : ajout d'un \'{e}l\'{e}ment
+		<<peine>> qui pourrat prendre les valeur <<EnCoursDExecution>>,
+		<<Execute>>, <<NonEligilible>>. La valeur <<NonEligible>> sera
+		prise s'il n'y a pas lieu d'avoir une peine pour l'\'{e}l\'{e}ment
+		du casier. Les valeurs <<EnCoursDExecution>> et <<Execute>> parle
+		d'elles m\^{e}me et permettront ainsi un meilleure suivi de la personne
+		et surtout de pouvoir facilement faire la requ\^{e}te <<Est ce qu'un
+		r\'{e}sident purge actuellement une peine?>> puisqu'alors il suffit
+		juste de s\'{e}lectionner les ElementsJudiciaires correspondant \`{a}
+		ce r\'{e}sident puis de egarder les valeurs de l'\'{e}l\'{e}ment <<peine>>
+		pour chacun d'entre, si au moins l'un de \`{a} la valeur <<EnCoursDExecution>>
+		la r\'{e}ponse sera oui.
+\end{itemize}
+
+\section*{Requ\^{e}tes}
+	\begin{itemize}
+		\item Liste des aides sociales que per\c{c}oit un r\'{e}sident <<X>>.
+		\begin{itemize}
+			\item Reformultion : Liste de toutes les aides O\`{U} l'IdR\'{e}sident = <IdX>
+			\item Alg\`{e}bre relationelle : $\sigma_{IdResident=<IdX>}AidesSociales$
+			\item MySQL: SELECT {*} FROM AideSociales WHERE IdResident = <IdX>;
+		\end{itemize}
+		\item Combien a pay\'{e} un r\'{e}sident en imp\^{o}t depuis 10 ans
+		\begin{itemize}
+			\item Reformulation : Liste des montants des imp\^{o}ts O\`{U} IdR\'{e}sident
+			= <IdX> ET O\`{U} la date est sup\'{e}rieur ou \'{e}gale \`{a} l'ann\'{e}e
+			en cours -10. (On fait la somme des montant en dehors d'une requ\^{e}te
+			MySQL).
+			\item Alg\`{e}bre relationnelle : $\pi_{montant}(\sigma_{IdResident=<IdX>}(\sigma_{date\geqq<anneeEnCours>-10}Impots))$
+			\item MySQL : SELECT montant FROM Impots WHERE IdResident = <IdX> AND date
+			= <AnneEnCours> - 10;
+			\begin{itemize}
+				\item Il n'y a plus qu'\`{a} faire une boucle sur les montants obtenus pour
+				les sommer
+			\end{itemize}
+		\end{itemize}
+		\item Est-ce que la demande d'allocation ch\^{o}mage a \'{e}t\'{e} valid\'{e}
+		pour un r\'{e}sident donn\'{e}.
+		\begin{itemize}
+			\item Reformulation : Etat de de l'Aides Sociales O\`{U} IdResident = <IdX>
+			ET O\`{U} nom = <Chomage>
+			\item Alg\`{e}bre relationnelle : $\pi_{etat}(\sigma_{IdResident=<IdX>}(\sigma_{nom='Chomage'}AidesSociales))$
+			\item MySQL : SELECT etat FROM AidesSociales WHERE IdResident = <IdX> AND
+			nom = 'Chomage';
+		\end{itemize}
+		\item Est ce que le r\'{e}sident purge actuellement une peine ?
+		\begin{itemize}
+			\item Reformulation : Liste des Elements du Casier Judiciaire O\`{U} IdResident
+			= <IdX> ET O\`{U} peine = 'EnCoursDExecution' ( Si liste vide alors
+			r\'{e}ponse non sinon r\'{e}ponse oui)
+			\item Alg\`{e}bre relationnelle : $\sigma_{IdResident=<IdX>}(\sigma_{peine='EnCoursDExecution}ElementsCasierJudicaire)$
+			\item MySQL : SELECT {*} FROM ElementsCasiersJudiciaire WHERE IdResident
+			= <IdX> AND peine = 'EnCoursDExecution';
+			\begin{itemize}
+				\item (Possibilit\'{e} de faire une projection sur une peine si on veut
+				simplement avoir la liste des peines 'EnCoursDExecution' cela d\'{e}pend
+				de l'usage choisit. Afficher tous les \'{e}l\'{e}ments si la peine
+				est en cours d'\'{e}x\'{e}cution \`{a} l'avantage de permettre 'en
+				savoir plus sur la dite peine).
+			\end{itemize}
+		\end{itemize}
+		\item Information sur l'extrait d'\'{e}tat civile d'un r\'{e}sident <<X>>
+		\begin{itemize}
+			\item Reformulation : Liste des attributs de Papier O\`{U} IdResident=<IdX>
+			ET O\`{U} type=EtatCivile
+			\item Alg\`{e}bre relationne : $\sigma_{IdeResident=<IdX>}(\sigma_{type='EtatCivile'}Papier)$
+			\item MySQL : SELECT {*} FROM Papier WHERE IdResident =<IdX> AND type =
+			'EtatCivile';
+		\end{itemize}
+		\item Effectuer une demande de renouvellement d'un passeport
+		\begin{itemize}
+			\item Pr\'{e}requis : Le R\'{e}sident rempli un formulaire puis le soumet,
+			les valeurs qu'il aurat renseign\'{e} seront mises ap\`{e}s v\'{e}rifications
+			dans les variables : <<IdDemande>>, <<IdResident>>, <<typeDemande>>,
+			<<nomDemande>>, <<DateDebutDemande>>, <<DateFinDemande>>. Le
+			r\'{e}sident n'aurat en soit qu'a renseign\'{e} le type de demande
+			qu'il souhaite faire ici <<Passeport>> le reste peut \^{e}tre obtenu
+			sans son intervention. Dans tous les cas, ces informations doivent
+			\^{e}tre disponible avant toute requ\^{e}te.
+			\item Reformulation : Cr\'{e}er un nouveau Papier qui a pour valeur les
+			valeurs des variables r\'{e}cup\'{e}r\'{e}.
+			\item MySQL : INSERTE INTO Papier (ID, IdResident, type, nom, DateDebut,
+			DateFin ) VALUES (IdDemande, IdResident, typeDemande, nomDemande,
+			DateDebutDemande, DateFinDemande);
+		\end{itemize}
+	\end{itemize}
+
+\end{document}
