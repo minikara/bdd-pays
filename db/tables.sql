@@ -5,7 +5,7 @@ USE pays;
 /* MAIN TABLES */
 
 CREATE TABLE Resident (
-  identifiant INTEGER NOT NULL AUTO_INCREMENT,
+  identifiant VARCHAR(50) NOT NULL,
   mdp VARCHAR(50) NOT NULL,
   nom VARCHAR(70) NOT NULL,
   prenom VARCHAR(35) NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE Resident (
 );
 
 CREATE TABLE Administrateur (
-  identifiant INTEGER NOT NULL AUTO_INCREMENT,
+  identifiant VARCHAR(50) NOT NULL,
   mdp VARCHAR(50) NOT NULL,
   nom VARCHAR(70) NOT NULL,
   prenom VARCHAR(35) NOT NULL,
@@ -25,37 +25,13 @@ CREATE TABLE Administrateur (
   PRIMARY KEY (identifiant)
 );
 
-CREATE TABLE AideSociale (
-  id INTEGER NOT NULL AUTO_INCREMENT,
-  nom VARCHAR(70) NOT NULL,
-  montant INT,
-  dateObtention DATE,
-  dateExpiration DATE,
-  PRIMARY KEY (id)
-);
-
-CREATE TABLE Impots (
-  id INTEGER NOT NULL AUTO_INCREMENT,
-  montant INT,
-  dateDeclaration DATE,
-  PRIMARY KEY (id)
-);
-
 CREATE TABLE Autorite (
-  identifiant INTEGER NOT NULL AUTO_INCREMENT,
+  identifiant VARCHAR(50) NOT NULL,
   mdp VARCHAR(50) NOT NULL,
   nom VARCHAR(70) NOT NULL,
   tribunal VARCHAR(10),
   roleAutorite VARCHAR(10),
   PRIMARY KEY (identifiant)
-);
-
-CREATE TABLE ElementCasierJudiciaire (
-  id INTEGER NOT NULL AUTO_INCREMENT,
-  dateElement DATE,
-  typeElement VARCHAR(10),
-  estApplique BOOLEAN,
-  PRIMARY KEY (id)
 );
 
 CREATE TABLE Papier (
@@ -64,7 +40,63 @@ CREATE TABLE Papier (
   nom VARCHAR(70) NOT NULL,
   dateDebut DATE,
   dateFin DATE,
-  PRIMARY KEY (id)
+  etat VARCHAR(10),
+  idResident VARCHAR(50) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (idResident) REFERENCES Resident(identifiant)
 );
 
+CREATE TABLE AideSociale (
+  id INTEGER NOT NULL AUTO_INCREMENT,
+  nom VARCHAR(70) NOT NULL,
+  montant INT,
+  dateObtention DATE,
+  dateExpiration DATE,
+  etat VARCHAR(10),
+  idResident VARCHAR(50) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (idResident) REFERENCES Resident(identifiant)
+);
+
+CREATE TABLE Impots (
+  id INTEGER NOT NULL AUTO_INCREMENT,
+  montant INT,
+  dateDeclaration DATE,
+  etat VARCHAR(10),
+  idResident VARCHAR(50) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (idResident) REFERENCES Resident(identifiant)
+);
+
+CREATE TABLE ElementJudiciaire (
+  id INTEGER NOT NULL AUTO_INCREMENT,
+  dateElement DATE,
+  typeElement VARCHAR(10),
+  peine VARCHAR(10),
+  idResident VARCHAR(50) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (idResident) REFERENCES Resident(identifiant)
+);
+
+
 /* JUNCTION TABLES */
+
+CREATE TABLE DeclarationImports (
+  idImpots INTEGER NOT NULL,
+  idResident VARCHAR(50) NOT NULL,
+  idAdmin VARCHAR(50) NOT NULL,
+  PRIMARY KEY (idImpots, idResident),
+  FOREIGN KEY (idImpots) REFERENCES Impots(id),
+  FOREIGN KEY (idResident) REFERENCES Resident(identifiant),
+  FOREIGN KEY (idAdmin) REFERENCES Administrateur(identifiant)
+);
+
+CREATE TABLE DemandeAideSociale (
+  idAide INTEGER NOT NULL,
+  idResident VARCHAR(50) NOT NULL,
+  idAdmin VARCHAR(50) NOT NULL,
+  PRIMARY KEY (idAide, idResident),
+  FOREIGN KEY (idAide) REFERENCES AideSociale(id),
+  FOREIGN KEY (idResident) REFERENCES Resident(identifiant),
+  FOREIGN KEY (idAdmin) REFERENCES Administrateur(identifiant)
+);
