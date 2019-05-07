@@ -1,0 +1,20 @@
+#!/usr/bin/bash
+
+# run command
+if [ $1 ]; then
+    ERROR=`mysql -u $1 < db/tables.sql 2>&1`
+else
+    ERROR=`mysql < db/tables.sql 2>&1`
+fi
+
+# check for errors
+if [[ ${ERROR} ]]; then
+    ErrCode=`echo ${ERROR} | cut -d " " -f2`
+    if [ $ErrCode -eq 1045 ]; then
+        echo "Argument USER expected."
+        echo "Usage: create USER"
+    else
+        echo ${ERROR}
+    fi
+    exit 1
+fi
