@@ -1,0 +1,24 @@
+\geometry{paper=a4paper, margin=2.2cm}
+\usepackage[defaultlines=10,all]{nowidow}
+\usepackage{float}
+
+\makeatletter
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\@title}
+\rhead{\@author}
+
+\renewcommand{\fps@figure}{H}
+
+\AtBeginDocument{\let\maketitle\relax}
+
+\DeclareUnicodeCharacter{266D}{\ensuremath{\flat}}
+
+%%%%%%%%%%%%%%%% COVER
+
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+\newcommand{\hsp}{\hspace{20pt}}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+

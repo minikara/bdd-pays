@@ -1,0 +1,13 @@
+---
+title: "Base de donnees de services des citoyens"
+subtitle: "Projet de base de donnees"
+date: "12 mars 2019"
+lang: fr-FR
+---
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.pos = 'H')
+knitr::opts_knit$set(root.dir = './')
+```
+```{r child='include/abbrev.tex'}
+```
+\pagebreak

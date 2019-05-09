@@ -1,0 +1,3 @@
+site: "bookdown::bookdown_site"
+rmd_files: ["index.rmd", "parts/1_intro.md", "parts/2_conception.md", "parts/3_requetes.md"]
+delete_merged_file: true
