@@ -5,67 +5,74 @@ USE pays;
 /* MAIN TABLES */
 
 CREATE TABLE Resident (
-  identifiant VARCHAR(50) NOT NULL,
+  id INTEGER NOT NULL AUTO_INCREMENT,
+  email VARCHAR(255) NOT NULL,
   mdp VARCHAR(50) NOT NULL,
   nom VARCHAR(70) NOT NULL,
   prenom VARCHAR(35) NOT NULL,
-  numSecu INT(15),
-  dateNaissance DATE,
-  nationalite CHAR(3),
-  codePostal int(5) NOT NULL,
-  PRIMARY KEY (identifiant)
+  numSecu BIGINT(15),
+  dateNaissance DATE NOT NULL,
+  nationalite VARCHAR(90),
+  codePostal VARCHAR(18),
+  PRIMARY KEY (id)
 );
 
 CREATE TABLE Administrateur (
-  identifiant VARCHAR(50) NOT NULL,
+  id INTEGER NOT NULL AUTO_INCREMENT,
+  email VARCHAR(255) NOT NULL,
   mdp VARCHAR(50) NOT NULL,
   nom VARCHAR(70) NOT NULL,
   prenom VARCHAR(35) NOT NULL,
-  roleAdmin VARCHAR(10),
-  PRIMARY KEY (identifiant)
+  PRIMARY KEY (id)
 );
 
 CREATE TABLE Autorite (
-  identifiant VARCHAR(50) NOT NULL,
+  id INTEGER NOT NULL AUTO_INCREMENT,
+  email VARCHAR(255) NOT NULL,
   mdp VARCHAR(50) NOT NULL,
   nom VARCHAR(70) NOT NULL,
+  prenom VARCHAR(35) NOT NULL,
   tribunal VARCHAR(10),
-  roleAutorite VARCHAR(10),
-  PRIMARY KEY (identifiant)
+  PRIMARY KEY (id)
 );
 
 CREATE TABLE Papier (
   id INTEGER NOT NULL AUTO_INCREMENT,
-  typePapier VARCHAR(10),
-  nom VARCHAR(70) NOT NULL,
+  typePapier VARCHAR(50),
   dateDebut DATE,
   dateFin DATE,
-  etat VARCHAR(10),
-  idResident VARCHAR(50) NOT NULL,
+  etat VARCHAR(20),
+  tarif INTEGER,
+  idResident INTEGER NOT NULL,
   PRIMARY KEY (id),
-  FOREIGN KEY (idResident) REFERENCES Resident(identifiant)
+  FOREIGN KEY (idResident) REFERENCES Resident(id)
 );
 
 CREATE TABLE AideSociale (
   id INTEGER NOT NULL AUTO_INCREMENT,
-  nom VARCHAR(70) NOT NULL,
+  typeAide VARCHAR(70) NOT NULL,
+  frequence VARCHAR(10),
   montant INT,
   dateObtention DATE,
   dateExpiration DATE,
-  etat VARCHAR(10),
-  idResident VARCHAR(50) NOT NULL,
+  etat VARCHAR(20),
+  idResident INTEGER NOT NULL,
+  idAdmin INTEGER,
   PRIMARY KEY (id),
-  FOREIGN KEY (idResident) REFERENCES Resident(identifiant)
+  FOREIGN KEY (idResident) REFERENCES Resident(id),
+  FOREIGN KEY (idAdmin) REFERENCES Administrateur(id)
 );
 
 CREATE TABLE Impots (
   id INTEGER NOT NULL AUTO_INCREMENT,
   montant INT,
   dateDeclaration DATE,
-  etat VARCHAR(10),
-  idResident VARCHAR(50) NOT NULL,
+  etat VARCHAR(20),
+  idResident INTEGER NOT NULL,
+  idAdmin INTEGER,
   PRIMARY KEY (id),
-  FOREIGN KEY (idResident) REFERENCES Resident(identifiant)
+  FOREIGN KEY (idResident) REFERENCES Resident(id),
+  FOREIGN KEY (idAdmin) REFERENCES Administrateur(id)
 );
 
 CREATE TABLE ElementJudiciaire (
@@ -73,30 +80,34 @@ CREATE TABLE ElementJudiciaire (
   dateElement DATE,
   typeElement VARCHAR(10),
   peine VARCHAR(10),
-  idResident VARCHAR(50) NOT NULL,
+  idResident INTEGER NOT NULL,
+  idAuthorite INTEGER NOT NULL,
   PRIMARY KEY (id),
-  FOREIGN KEY (idResident) REFERENCES Resident(identifiant)
+  FOREIGN KEY (idResident) REFERENCES Resident(id),
+  FOREIGN KEY (idAuthorite) REFERENCES Autorite(id)
 );
 
 
-/* JUNCTION TABLES */
+/* JUNCTION TABLES
 
 CREATE TABLE DeclarationImports (
   idImpots INTEGER NOT NULL,
-  idResident VARCHAR(50) NOT NULL,
-  idAdmin VARCHAR(50) NOT NULL,
+  idResident INTEGER NOT NULL,
+  idAdmin INTEGER NOT NULL,
   PRIMARY KEY (idImpots, idResident),
   FOREIGN KEY (idImpots) REFERENCES Impots(id),
-  FOREIGN KEY (idResident) REFERENCES Resident(identifiant),
-  FOREIGN KEY (idAdmin) REFERENCES Administrateur(identifiant)
+  FOREIGN KEY (idResident) REFERENCES Resident(id),
+  FOREIGN KEY (idAdmin) REFERENCES Administrateur(id)
 );
 
 CREATE TABLE DemandeAideSociale (
   idAide INTEGER NOT NULL,
-  idResident VARCHAR(50) NOT NULL,
-  idAdmin VARCHAR(50) NOT NULL,
+  idResident INTEGER NOT NULL,
+  idAdmin INTEGER NOT NULL,
   PRIMARY KEY (idAide, idResident),
   FOREIGN KEY (idAide) REFERENCES AideSociale(id),
-  FOREIGN KEY (idResident) REFERENCES Resident(identifiant),
-  FOREIGN KEY (idAdmin) REFERENCES Administrateur(identifiant)
+  FOREIGN KEY (idResident) REFERENCES Resident(id),
+  FOREIGN KEY (idAdmin) REFERENCES Administrateur(id)
 );
+
+*/
