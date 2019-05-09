@@ -1,2 +1,4 @@
 .idea/
-db/raw_data
+db/data/raw
+db/data/__pycache__
+
