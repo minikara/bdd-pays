@@ -79,7 +79,7 @@ CREATE TABLE ElementJudiciaire (
   id INTEGER NOT NULL AUTO_INCREMENT,
   dateElement DATE,
   typeElement VARCHAR(10),
-  peine VARCHAR(10),
+  peine VARCHAR(20),
   idResident INTEGER NOT NULL,
   idAuthorite INTEGER NOT NULL,
   PRIMARY KEY (id),
