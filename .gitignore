@@ -1,4 +1,5 @@
 .idea/
 db/data/raw
+db/data/log
 db/data/__pycache__
 
