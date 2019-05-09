@@ -12,7 +12,7 @@ if [[ ${ERROR} ]]; then
     ErrCode=`echo ${ERROR} | cut -d " " -f2`
     if [ $ErrCode -eq 1045 ]; then
         echo "Argument USER expected."
-        echo "Usage: create USER"
+        echo "Usage: create_db USER"
     else
         echo ${ERROR}
     fi

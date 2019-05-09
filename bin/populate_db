@@ -1,0 +1,20 @@
+#!/usr/bin/bash
+
+# run command
+if [ $1 ]; then
+    ERROR=`cat db/populate/*.sql | mysql -u $1 2>&1`
+else
+    ERROR=`cat db/populate/*.sql | mysql 2>&1`
+fi
+
+# check for errors
+if [[ ${ERROR} ]]; then
+    ErrCode=`echo ${ERROR} | cut -d " " -f2`
+    if [ $ErrCode -eq 1045 ]; then
+        echo "Argument USER expected."
+        echo "Usage: populate_db USER"
+    else
+        echo ${ERROR}
+    fi
+    exit 1
+fi
