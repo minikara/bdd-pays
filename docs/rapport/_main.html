@@ -1758,45 +1758,87 @@ Les autorités peuvent consulter le casier judiciaire de chaque habitant (comme 
 <div id="requetes" class="section level1">
 <h1><span class="header-section-number">3</span> Requêtes</h1>
 <pre class="r"><code>library(DBI)
-bdd &lt;- dbConnect(RMySQL::MySQL(), dbname=&quot;pays&quot;, username=&quot;root&quot;)</code></pre>
-<pre class="sql"><code>SHOW TABLES;</code></pre>
-<div class="knitsql-table">
-<table>
-<caption><span id="tab:unnamed-chunk-3">Table 3.1: </span>7 records</caption>
-<thead>
-<tr class="header">
-<th align="left">Tables_in_pays</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Administrateur</td>
-</tr>
-<tr class="even">
-<td align="left">AideSociale</td>
-</tr>
-<tr class="odd">
-<td align="left">Autorite</td>
-</tr>
-<tr class="even">
-<td align="left">ElementJudiciaire</td>
-</tr>
-<tr class="odd">
-<td align="left">Impots</td>
-</tr>
-<tr class="even">
-<td align="left">Papier</td>
-</tr>
-<tr class="odd">
-<td align="left">Resident</td>
-</tr>
-</tbody>
-</table>
-</div>
+pays &lt;- dbConnect(RMySQL::MySQL(), dbname=&quot;pays&quot;, username=&quot;root&quot;, password=&quot;&quot;)</code></pre>
 <p>Liste des aides sociales que perçoit un résident <strong>X</strong>.
 - Reformultion : Liste de toutes les aides OÙ l’IdRésident = &lt;IdX&gt;
 - Algèbre relationelle : <span class="math inline">\(\sigma_{IdResident=&lt;IdX&gt;}AidesSociales\)</span>
 - MySQL: SELECT * FROM AideSociales WHERE IdResident = &lt;IdX&gt;;</p>
+<pre class="sql"><code>SELECT * FROM AideSociale WHERE IdResident = 1</code></pre>
+<div class="knitsql-table">
+<table>
+<caption><span id="tab:unnamed-chunk-3">Table 3.1: </span>5 records</caption>
+<thead>
+<tr class="header">
+<th align="right">id</th>
+<th align="left">typeAide</th>
+<th align="left">frequence</th>
+<th align="right">montant</th>
+<th align="left">dateObtention</th>
+<th align="left">dateExpiration</th>
+<th align="left">etat</th>
+<th align="right">idResident</th>
+<th align="right">idAdmin</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">237570</td>
+<td align="left">PrimeNaissance</td>
+<td align="left">p</td>
+<td align="right">541</td>
+<td align="left">2019-03-06</td>
+<td align="left">2016-09-30</td>
+<td align="left">Expire</td>
+<td align="right">1</td>
+<td align="right">13</td>
+</tr>
+<tr class="even">
+<td align="right">237635</td>
+<td align="left">RSA</td>
+<td align="left">m</td>
+<td align="right">325</td>
+<td align="left">2018-10-27</td>
+<td align="left">2019-10-22</td>
+<td align="left">Valide</td>
+<td align="right">1</td>
+<td align="right">15</td>
+</tr>
+<tr class="odd">
+<td align="right">237704</td>
+<td align="left">CAF</td>
+<td align="left">m</td>
+<td align="right">92</td>
+<td align="left">2019-02-19</td>
+<td align="left">2020-02-14</td>
+<td align="left">Valide</td>
+<td align="right">1</td>
+<td align="right">33</td>
+</tr>
+<tr class="even">
+<td align="right">237735</td>
+<td align="left">CAF</td>
+<td align="left">m</td>
+<td align="right">210</td>
+<td align="left">2018-02-07</td>
+<td align="left">2018-07-18</td>
+<td align="left">Expire</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">237966</td>
+<td align="left">CMU</td>
+<td align="left">a</td>
+<td align="right">316</td>
+<td align="left">2018-10-25</td>
+<td align="left">2019-10-20</td>
+<td align="left">Valide</td>
+<td align="right">1</td>
+<td align="right">33</td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>Combien a payé un résident en impôt depuis 10 ans
 - Reformulation : Liste des montants des impôts OÙ IdRésident = &lt;IdX&gt;
 ET la date est supérieur ou égale à l’année en cours -10.
