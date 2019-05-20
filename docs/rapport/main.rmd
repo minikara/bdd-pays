@@ -1,13 +1,23 @@
 ---
-title: "Base de donnees de services des citoyens"
-subtitle: "Projet de base de donnees"
+title: "Base de données de services des citoyens"
+subtitle: "Projet de base de données"
 date: "12 mars 2019"
 lang: fr-FR
 ---
-```{r global_options, include=FALSE}
-knitr::opts_chunk$set(fig.pos = 'H')
-knitr::opts_knit$set(root.dir = './')
+
+```{r setup, include=FALSE}
+library(knitr)
+
+# debugging tinytex
+options(tinytex.verbose = TRUE)
+
+# set directory
+proj <- normalizePath('..')
+opts_knit$set(root.dir = proj)
+
+# set chunk options
+opts_chunk$set(fig.pos = 'H')
+opts_chunk$set(comment = NA)
 ```
-```{r child='include/abbrev.tex'}
-```
+
 \pagebreak

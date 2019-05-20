@@ -9,11 +9,11 @@
 \lhead{\@title}
 \rhead{\@author}
 
+\usepackage{pmboxdraw} % for tree chars encoding
+
 \renewcommand{\fps@figure}{H}
 
 \AtBeginDocument{\let\maketitle\relax}
-
-\DeclareUnicodeCharacter{266D}{\ensuremath{\flat}}
 
 %%%%%%%%%%%%%%%% COVER
 
@@ -22,3 +22,11 @@
 \newcommand{\hsp}{\hspace{20pt}}
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
+% relational algebra symbols
+\def\ojoin{\setbox0=\hbox{$\bowtie$}%
+  \rule[-.02ex]{.25em}{.4pt}\llap{\rule[\ht0]{.25em}{.4pt}}}
+\def\leftouterjoin{\mathbin{\ojoin\mkern-5.8mu\bowtie}}
+\def\rightouterjoin{\mathbin{\bowtie\mkern-5.8mu\ojoin}}
+\def\fullouterjoin{\mathbin{\ojoin\mkern-5.8mu\bowtie\mkern-5.8mu\ojoin}}
+
+\DeclareUnicodeCharacter{27D5}{\ensuremath{\leftouterjoin}}

@@ -8,6 +8,8 @@ bookdown::pdf_book:
 bookdown::html_document2:
   toc: true
   toc_float: true
+  toc_depth: 2
+  number_sections: false
   theme: simplex
   fig_caption: true
   css: include/styles.css
