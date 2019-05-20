@@ -2,8 +2,6 @@ DROP DATABASE IF EXISTS pays;
 CREATE DATABASE pays;
 USE pays;
 
-/* MAIN TABLES */
-
 CREATE TABLE Resident (
   id INTEGER NOT NULL AUTO_INCREMENT,
   email VARCHAR(255) NOT NULL,
@@ -87,27 +85,3 @@ CREATE TABLE ElementJudiciaire (
   FOREIGN KEY (idAuthorite) REFERENCES Autorite(id)
 );
 
-
-/* JUNCTION TABLES
-
-CREATE TABLE DeclarationImports (
-  idImpots INTEGER NOT NULL,
-  idResident INTEGER NOT NULL,
-  idAdmin INTEGER NOT NULL,
-  PRIMARY KEY (idImpots, idResident),
-  FOREIGN KEY (idImpots) REFERENCES Impots(id),
-  FOREIGN KEY (idResident) REFERENCES Resident(id),
-  FOREIGN KEY (idAdmin) REFERENCES Administrateur(id)
-);
-
-CREATE TABLE DemandeAideSociale (
-  idAide INTEGER NOT NULL,
-  idResident INTEGER NOT NULL,
-  idAdmin INTEGER NOT NULL,
-  PRIMARY KEY (idAide, idResident),
-  FOREIGN KEY (idAide) REFERENCES AideSociale(id),
-  FOREIGN KEY (idResident) REFERENCES Resident(id),
-  FOREIGN KEY (idAdmin) REFERENCES Administrateur(id)
-);
-
-*/

@@ -12,7 +12,7 @@ library(knitr)
 options(tinytex.verbose = TRUE)
 
 # set directory
-proj <- normalizePath('..')
+proj <- normalizePath('../..')
 opts_knit$set(root.dir = proj)
 
 # set chunk options
@@ -23,11 +23,11 @@ opts_chunk$set(comment = NA)
 library(kableExtra)
 
 options(knitr.kable.NA = 'null')
-my_kable <- function(data, nmax=30, ...) {
+my_kable <- function(data, nmax=30, f_size=7, ...) {
     if (is_latex_output()) {
         cap = paste("résultats 1..", min(nmax, nrow(data)), " (total: ", nrow(data), ")", sep="")
         kable(data[1:min(nmax,nrow(data)),], booktabs=TRUE, caption = cap, ...) %>%
-            kable_styling(latex_options = "striped", font_size=8)
+            kable_styling(latex_options = c("striped", "HOLD_position"), font_size=f_size)
     } else {
         if (nrow(data) > 7) {
             h = "300px"

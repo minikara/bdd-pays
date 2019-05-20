@@ -1,10 +1,5 @@
 # Requêtes
 
-```{r}
-library(DBI)
-pays <- dbConnect(RMySQL::MySQL(), dbname="pays", username="root", password="")
-```
-
 On initialise la valeur test suivante:
 ```{r}
 X <- 44
