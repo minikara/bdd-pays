@@ -1,17 +1,14 @@
-# Requêtes
+## Requêtes
 
-On initialise la valeur test suivante:
-```{r}
-X <- 44
-Y <- 77
-```
 
 ### Liste des aides sociales que perçoit un résident donné. {-}
 
 - **Reformultion :** Liste de toutes les aides **où** idResident = *X*
 - **Algèbre relationelle :** $$\sigma_{\text{idResident}=<X>}(\text{AideSociale})$$
-- **SQL:**
-
+- **SQL:** On donne une valeur pour $X$
+```{r}
+X <- 44
+```
 ```{sql, connection=pays, output.var="q1"}
 SELECT * FROM AideSociale WHERE idResident = ?X;
 ```
@@ -39,6 +36,7 @@ SELECT R.id, R.nom, R.prenom, R.nationalite, SUM(montant) FROM Impots, Resident 
 
 Si on cherche pour un résident en particulier, il suffit de faire
 $$ \gamma_{\text{somme(montant)}} (\sigma_\text{idResident=<X>}(I))$$
+
 ```{sql, connection=pays, output.var="q3"}
 SELECT SUM(montant) FROM Impots
     WHERE etat = "Valide"
@@ -128,7 +126,8 @@ $$ T = \pi_{\text{id,idAdmin}}(\sigma_{\text{etat="EnCoursDeValidation"}}(\text{
 $$ {}_{\text{id}}\gamma_{\text{compter(T.id)}}(\text{Administrateur}\underset{\text{id=T.idAdmin}}{⟕}T)$$
 
 ```{sql, connection=pays, output.var="q6"}
-SELECT Administrateur.id, email, nom, prenom, COUNT(ALL T.id) as nbTaches from Administrateur
+SELECT Administrateur.id, email, nom, prenom, COUNT(ALL T.id) as nbTaches
+FROM Administrateur
 LEFT OUTER JOIN (
     SELECT id, idAdmin FROM AideSociale WHERE etat = "EnCoursDeValidation"
     UNION ALL SELECT id, idAdmin FROM Impots WHERE etat = "EnCoursDeValidation"
@@ -139,6 +138,18 @@ ORDER BY nbTaches;
 `r q6`
 
 ### Donner pour chaque aide sociale attribuée le montant total reçu {-}
+
+Afin de calculer le montant reçu pour une aide sociale il faut prendre en compte
+sa fréquence, sa date d'obtention et sa date d'expiration.
+
+En effet, on introduit une fonction **M(m,f,deb,fin)** qui calcule le montant total où:
+
+- **m:** montant unitaire.
+- **f:** fréquence qui prend l'une des valeurs (annuelle, monsuelle, ou poncuelle).
+- **deb:** date d'obtention de l'aide.
+- **fin:** date de fin de l'aide.
+
+$$ A_T = {}_\text{id} \gamma_\text{M(montant, frequence, dateObtention, dateExpiration)}(\text{AideSociale}) $$
 
 ```{sql, connection=pays}
 DROP VIEW IF EXISTS AideTotale;
@@ -155,8 +166,67 @@ FROM AideSociale;
 ```
 
 ```{sql, connection=pays, output.var="q7"}
-SELECT AideSociale.id, typeAide, frequence, montant, montantTotal, dateObtention, dateExpiration, idResident
+SELECT AideSociale.id, typeAide, frequence, montant, montantTotal,
+    dateObtention, dateExpiration, idResident
 FROM AideSociale, AideTotale
 WHERE AideSociale.id = AideTotale.id;
 ```
 `r q7`
+
+### Combien chaque résident reçoit en aides sociales ?
+
+On reprend la vue qu'on vient de créer, et ensuite on fait la somme par résident.
+
+- Jointure interne de AideTotale et AideSociale sur le *id*
+- Jointure interne avec le résident sur *idResident*
+- La somme des montants totaux groupés par résident
+
+**Remarque:** on aurait pu mettre tous les champs de la relation AideSociale
+dans la vue AideTotale ce qui nous évitera de faire la première jointure.
+On justifie notre choix par le fait qu'on a préféré obtenir une vue minimale.
+
+$$ {}_\text{R.id} \gamma_\text{somme(montantTotal)}(\text{Resident}\underset{\text{R.id=idResident}}{\bowtie}(\text{AideSociale}\underset{\text{id}}{\bowtie}A_T))$$
+
+On rajoute le nom, prénom, et la nationalité du résident pour mieux visualiser.
+```{sql, connection=pays, output.var="q8"}
+SELECT R.id, R.nom, R.prenom, SUM(ALL montantTotal) as total, R.nationalite
+FROM AideTotale, AideSociale
+INNER JOIN Resident R on AideSociale.idResident = R.id
+WHERE AideTotale.id = AideSociale.id
+GROUP BY R.id
+ORDER BY total DESC;
+```
+`r q8`
+
+### Combien on donne au non-français en aides sociales ?
+
+Similairement à la requête précédante, on utilise la vue AideTotale
+
+- Jointure interne de AideTotale et AideSociale sur le *id*
+- Jointure interne avec le résident sur *idResident*
+- La somme des montants totaux **où** résident est non français.
+
+$$ \gamma_\text{somme(montantTotal)}(\sigma_{\text{nationalite}\neq\text{"France"}}(\text{Resident}\underset{\text{R.id=idResident}}{\bowtie}(\text{AideSociale}\underset{\text{id}}{\bowtie}A_T)))$$
+
+```{sql, connection=pays, output.var="q9"}
+SELECT SUM(ALL montantTotal) AS total
+FROM AideTotale, AideSociale
+INNER JOIN Resident R on AideSociale.idResident = R.id
+WHERE AideTotale.id = AideSociale.id
+AND R.nationalite <> "France"
+```
+`r q9`
+
+Il est aussi intéressant de regrouper les montants par nationalité (pour les montants non-nuls).
+
+$$\sigma_{\text{total}\neq 0}({}_\text{nationalite} \gamma_\text{somme(montantTotal)}(\sigma_{\text{nationalite}\neq\text{"France"}}(\text{Resident}\underset{\text{R.id=idResident}}{\bowtie}(\text{AideSociale}\underset{\text{id}}{\bowtie}A_T))))$$
+
+```{sql, connection=pays, output.var="q10"}
+SELECT R.nationalite, SUM(ALL montantTotal) AS total
+FROM AideTotale, AideSociale
+INNER JOIN Resident R on AideSociale.idResident = R.id
+WHERE AideTotale.id = AideSociale.id
+GROUP BY R.nationalite
+HAVING total > 0;
+```
+`r q10`
