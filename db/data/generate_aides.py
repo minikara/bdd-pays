@@ -49,7 +49,7 @@ for i in range(nb):
     elif etat[i] == 'Expire':
         row.append(str(rnd.randint(montant[choice]//5, montant[choice])))
         fin = time.random_date('2011-01-01')
-        row.append(time.add_duration(debut, yrs=-duree_ans[choice]))
+        row.append(time.add_duration(fin, yrs=-duree_ans[choice]))
         row.append(fin)
     row.append(etat[i])
     row.append(str(rnd.randint(1, 100)))
