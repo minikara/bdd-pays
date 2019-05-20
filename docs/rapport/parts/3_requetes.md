@@ -17,9 +17,10 @@ Y <- 77
 - **Algèbre relationelle :** $$\sigma_{\text{idResident}=<X>}(\text{AideSociale})$$
 - **SQL:**
 
-```{sql, connection=pays}
+```{sql, connection=pays, output.var="q1"}
 SELECT * FROM AideSociale WHERE idResident = ?X;
 ```
+`r q1`
 
 ### Combien chaque résident a payé en impôt sur les derniers 10 ans ? {-}
 
@@ -32,34 +33,37 @@ $$ I = \pi_{\text{montant, idResident}}(\sigma_{\text{date}\geq<\text{AnnéeEnCo
 Afin d'obtenir la somme, nous n'avons qu'à faire: ${}_\text{idResident}\gamma_{\text{somme}(\text{montant})}(\sigma_{\text{idResident}=<X>}(I))$
 - **SQL :**
 
-```{sql, connection=pays}
+```{sql, connection=pays, output.var="q2"}
 SELECT R.id, R.nom, R.prenom, R.nationalite, SUM(montant) FROM Impots, Resident R
     WHERE etat = "Valide"
     AND idResident = R.id
     AND dateDeclaration >= YEAR(CURDATE()) - 10
     GROUP BY idResident;
 ```
+`r q2[1:min(25,nrow(q2)),]`
 
 Si on cherche pour un résident en particulier, il suffit de faire
 $$ \gamma_{\text{somme(montant)}} (\sigma_\text{idResident=<X>}(I))$$
-```{sql, connection=pays}
+```{sql, connection=pays, output.var="q3"}
 SELECT SUM(montant) FROM Impots
     WHERE etat = "Valide"
     AND idResident = ?X
     AND dateDeclaration >= YEAR(CURDATE()) - 10;
 ```
+`r q3`
 
 ### Est-ce que la demande d'allocation RSA a été validé pour un résident donné ? {-}
 
 - **Reformulation :** état de l'aide sociale **où** idResident = *X* **et** typeAide = "RSA"
 - **Algèbre relationnelle :**
 $$\pi_{\text{etat}}(\sigma_{\text{idResident}=<X>}(\sigma_{\text{typeAide}=\text{"RSA"}}(\text{AideSociale})))$$
-- **SQL :** SELECT etat FROM AidesSociales WHERE IdResident = \<IdX\> AND nom = 'Chomage';
-```{sql, connection=pays}
+- **SQL :**
+```{sql, connection=pays, output.var="q4"}
 SELECT etat FROM AideSociale
     WHERE idResident = ?X
     AND typeAide = "RSA";
 ```
+`r q4`
 
 ### Est ce que tel résident purge actuellement une peine ? {-}
 
@@ -69,11 +73,12 @@ SELECT etat FROM AideSociale
 - **Algèbre relationnelle :**
 $$\sigma_{\text{idResident}=<X>}(\sigma_{\text{peine}=\text{"EnCoursDExecution"}}(\text{ElementJudicaire})$$
 - **SQL :**
-```{sql, connection=pays}
+```{sql, connection=pays, output.var="q5"}
 SELECT * FROM ElementJudiciaire
     WHERE idResident = ?X
     AND peine = "EnCoursDExecution";
 ```
+`r q5`
 
 \* (Possibilité de faire une projection sur une peine si on veut simplement avoir la liste des peines 'EnCoursDExecution'
 cela dépend de l'usage choisit.
@@ -118,28 +123,25 @@ ce qui exclura les employés non disponible des résultats de cette requête.
 
 Plongeons nous alors dans cette requête !
 
-Un administrateur est chargé d'examiner les demandes d'aides sociales et des déclarations d'impots,
+- Un administrateur est chargé d'examiner les demandes d'aides sociales et des déclarations d'impots,
 on voudrais donc d'abord séléctionner tous les éléments de ces deux relations
 dont l'état est *en cours de validation*.
+- Ensuite, on fait une jointure externe gauche entre Administrateur et la relation obtenue.
+- A l'aide de la fonction d'agrégation de comptage, compte le nombre d'occurances par administrateur.
 
-La suite de la requête diffère un peu entre l'algèbre relationnel et MySQL;
-notre première approche était de faire une jointure externe entre la relation obtenue
-et la relation Administrateur, en d'utiliser ensuite la fonction d'agrégation de comptage par groupe.
+$$ T = \pi_{\text{id,idAdmin}}(\sigma_{\text{etat="EnCoursDeValidation"}}(\text{AideSociale}))\cup\pi_\text{id,idAdmin}(\sigma_{\text{etat="EnCoursDeValidation"}}(\text{Impots}))$$
+$$ {}_{\text{id}}\gamma_{\text{compter(T.id)}}(\text{Administrateur}\underset{\text{id=T.idAdmin}}{⟕}T)$$
 
-$$ T = \sigma_{\text{etat="EnCoursDeValidation"}}(\pi_{\text{id,idAdmin}}(\text{AideSociale})\cup\pi_\text{id,idAdmin}(\text{Impots}))$$
-
-$$ {}_{\text{idAdmin}}\gamma_{\text{compter(id)}}(\text{Administrateur}\underset{\text{idAdmin}}{⟕}T)$$
-
-```{sql, connection=pays}
-SELECT id, email, nom, prenom, nbTaches from Administrateur LEFT JOIN (
-    SELECT COUNT(ALL id) AS nbTaches, idAdmin FROM (
-        SELECT id, idAdmin FROM AideSociale WHERE etat = "EnCoursDeValidation"
-        UNION ALL SELECT id, idAdmin FROM Impots WHERE etat = "EnCoursDeValidation"
-    ) AS tUnion
-    GROUP BY idAdmin
-) AS tCount ON tCount.idAdmin = Administrateur.id;
-/*ORDER BY nbTaches;*/
+```{sql, connection=pays, output.var="q6"}
+SELECT Administrateur.id, email, nom, prenom, COUNT(ALL T.id) as nbTaches from Administrateur
+LEFT OUTER JOIN (
+    SELECT id, idAdmin FROM AideSociale WHERE etat = "EnCoursDeValidation"
+    UNION ALL SELECT id, idAdmin FROM Impots WHERE etat = "EnCoursDeValidation"
+) AS T ON T.idAdmin = Administrateur.id
+GROUP BY Administrateur.id
+ORDER BY nbTaches;
 ```
+`r q6`
 
 ### Donner pour chaque aide sociale attribuée le montant total reçu {-}
 
@@ -157,8 +159,9 @@ SELECT id,
 FROM AideSociale;
 ```
 
-```{sql, connection=pays}
+```{sql, connection=pays, output.var="q7"}
 SELECT AideSociale.id, typeAide, frequence, montant, montantTotal, dateObtention, dateExpiration, idResident
 FROM AideSociale, AideTotale
 WHERE AideSociale.id = AideTotale.id;
 ```
+`r q7`
