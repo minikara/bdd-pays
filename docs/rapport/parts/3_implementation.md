@@ -11,7 +11,7 @@ asis_output(paste("```sql", readr::read_file("db/tables.sql"), "```", sep="\n"))
 ```
 
 Ensuite, nous avons écrit des scripts (en *python* cf. `db/data`) permettant de générer des données aléatoires mais assez pertinentes
-afin de pouvoir tester nous requêtes et d'avoir un aperçu de l'application du projet.
+afin de pouvoir tester nos requêtes et d'avoir un aperçu de l'application du projet.
 
 Après avoir populé la base de données, nous avons sauvegardé les données dans des scripts MySQL
 sous forme de `INSERT` pour des raisons de portabilité (cf. `db/populate`).

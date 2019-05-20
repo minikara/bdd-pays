@@ -77,7 +77,7 @@ SELECT * FROM ElementJudiciaire
 
 \* (Possibilité de faire une projection sur une peine si on veut simplement avoir la liste des peines 'EnCoursDExecution'
 cela dépend de l'usage choisit.
-Afficher tous les éléments si la peine est en cours d'éxécution à l'avantage de permettre 'en savoir plus sur la dite peine).
+Afficher tous les éléments si la peine est en cours d'exécution à l'avantage de permettre d'en savoir plus sur la dite peine).
 
 <!--
 Informations sur l'extrait d'état civile d'un résident *X*
@@ -94,8 +94,8 @@ SELECT * FROM AideSociale;
 
 ### Effectuer une demande de renouvellement d'un passeport {-}
 
-Dans notre vision de cette application il s'agit d'un procédure qui ne demande pas l'intervention d'un *Administrateur*
-car toutes les informations nécessaires sont déjà dans cette base de donnée.
+Dans notre vision de cette application il s'agit d'une procédure qui ne demande pas l'intervention d'un *Administrateur*
+car toutes les informations nécessaires sont déjà dans cette base de données.
 Par exemple, en supposant qu'un citoyen qui purge une peine n'a pas le droit d'obtenir un passeport
 il s'agit donc de faire la requête précédente.
 Pour le cas d'un passeport, le tarif et la durée sont déjà fixés, il reste plus qu'à remplir la base de donné par
@@ -106,7 +106,7 @@ INSERT INTO Papier (idResident, typePapier, dateDebut, dateFin, etat, tarif)
 VALUES (?X, "passeport", CURRENT_DATE(), CURRENT_DATE() + 10, "EnCoursDeValidation", 86);
 ```
 
-### Lister tout les administrateur dans l'ordre de nombre de tâches dont ils sont chargé {-}
+### Lister tout les administrateur dans l'ordre de nombre de tâches dont ils sont chargés {-}
 
 On voudrait étendre la relation Administrateur en y rajoutant le nombre de tâches dont chaque
 administrateur est chargé actuellement, cette requête est très utile dans le cas où on voudrait automatiser
@@ -122,7 +122,7 @@ Plongeons nous alors dans cette requête !
 on voudrais donc d'abord séléctionner tous les éléments de ces deux relations
 dont l'état est *en cours de validation*.
 - Ensuite, on fait une jointure externe gauche entre Administrateur et la relation obtenue.
-- A l'aide de la fonction d'agrégation de comptage, compte le nombre d'occurances par administrateur.
+- A l'aide de la fonction d'agrégation de comptage, on compte le nombre d'occurances par administrateur.
 
 $$ T = \pi_{\text{id,idAdmin}}(\sigma_{\text{etat="EnCoursDeValidation"}}(\text{AideSociale}))\cup\pi_\text{id,idAdmin}(\sigma_{\text{etat="EnCoursDeValidation"}}(\text{Impots}))$$
 $$ {}_{\text{id}}\gamma_{\text{compter(T.id)}}(\text{Administrateur}\underset{\text{id=T.idAdmin}}{⟕}T)$$
